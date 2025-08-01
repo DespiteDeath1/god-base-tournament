@@ -1,0 +1,121 @@
+base_model: NousResearch/Meta-Llama-3-8B-Instruct
+model_type: AutoModelForCausalLM
+tokenizer_type: AutoTokenizer
+
+load_in_8bit: false
+load_in_4bit: false
+strict: false
+
+chat_template: llama3
+datasets:
+dataset_prepared_path:
+val_set_size: 0
+output_dir: miner_id_24
+
+rl: grpo
+
+trl:
+  beta: 0.05
+  max_completion_length: 512
+  use_vllm: False
+  num_generations: 8  
+  temperature: 0.8
+  top_p: 0.95
+  top_k: 50
+  kl_penalty_method: k3
+  kl_threshold: 0.1
+  normalize_advantages: true
+  batch_size_per_gpu: 8
+  mini_batch_size: 8
+  gradient_accumulation_steps: 4
+  log_with: "wandb"
+  tracker_kwargs:
+    wandb:
+      project: "Gradients-On-Demand"
+  log_stats: true
+
+sequence_len: 1024
+sample_packing: false
+eval_sample_packing: false
+pad_to_sequence_len: true
+trust_remote_code: true
+
+adapter: lora
+lora_model_dir:
+lora_r: 128
+lora_alpha: 256
+lora_dropout: 0.05
+lora_target_linear: true
+lora_fan_in_fan_out:
+lora_modules_to_save:
+  - embed_tokens
+  - lm_head
+
+gradient_accumulation_steps: 4
+micro_batch_size: 8
+optimizer: adamw_torch_fused
+lr_scheduler: constant_with_warmup
+learning_rate: 2e-6
+
+train_on_inputs: false
+group_by_length: false
+bf16: true
+fp16: false
+tf32: true
+
+gradient_checkpointing: true
+gradient_checkpointing_kwargs:
+  use_reentrant: false
+
+resume_from_checkpoint:
+local_rank:
+logging_steps: 1
+xformers_attention:
+flash_attention: false
+flash_attn_cross_entropy: false
+flash_attn_rms_norm: false
+s2_attention:
+
+warmup_steps: 150
+max_steps: 1800
+
+debug:
+deepspeed:
+weight_decay: 0.01
+fsdp:
+fsdp_config:
+
+wandb_project: Gradients-On-Demand
+wandb_entity:
+wandb_mode: online
+wandb_run: your_name
+wandb_runid: default
+
+hub_model_id:  
+hub_repo:
+hub_strategy: checkpoint  
+hub_token:  
+
+dataloader_num_workers: 0
+dataloader_pin_memory: false
+
+save_strategy: "steps"
+save_steps: 75  
+save_total_limit: 2 
+save_safetensors: true
+save_only_model: true
+output_dir: ./outputs
+
+evaluation_strategy: "no"
+
+ddp_timeout: 7200
+ddp_bucket_cap_mb: 25
+ddp_broadcast_buffers: false
+
+torch_compile: false
+torch_compile_backend: inductor
+
+reward_model_path:
+reward_model_revision:
+max_memory:
+gpu_memory_limit:
